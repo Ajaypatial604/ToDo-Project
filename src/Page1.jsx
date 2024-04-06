@@ -4,7 +4,7 @@ import { Table } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import "./Page1.css";
 
-let storedData = JSON.parse(localStorage.getItem("formData") || []);
+let storedData = JSON.parse(localStorage.getItem("formData") || "[]");
 let person = {
   name: "",
   mobileNo: "",
