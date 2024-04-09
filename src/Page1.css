@@ -4,6 +4,7 @@
   justify-content: space-around;
   flex-direction: column;
   align-items: center;
+  overflow: scroll;
 }
 .form Form {
   width: 50%;
@@ -30,6 +31,6 @@ td {
   caption-side: top;
   font-size: clamp(1.5rem, 3.5vw, 3.5rem);
 }
-.taskCompleted {
+.strike-through {
   text-decoration: line-through;
 }

@@ -10,6 +10,7 @@ let person = {
   mobileNo: "",
   gender: "",
   checked: false,
+  completed: false,
   array: [],
 };
 const Page1 = () => {
@@ -19,6 +20,7 @@ const Page1 = () => {
   let [mobileErr, setMobileErr] = useState();
   let [isEditing, setIsEditing] = useState(false);
   let [editIndex, setEditIndex] = useState(null);
+  let [filterType, setFilterType] = useState("all");
   useEffect(() => {
     localStorage.setItem("formData", JSON.stringify(array));
   }, [array]);
@@ -63,6 +65,14 @@ const Page1 = () => {
       alert("Please fill the form according to the validation.....");
     }
   }
+  function toggleComplete(index) {
+    const newArray = [...array];
+    newArray[index] = {
+      ...newArray[index],
+      completed: !newArray[index].completed,
+    };
+    setArray(newArray);
+  }
   function updateData(i) {
     setEditIndex(i);
     setIsEditing(true);
@@ -75,6 +85,18 @@ const Page1 = () => {
       setArray(updatedArray);
     }
   }
+  function handleFilterChange(e) {
+    setFilterType(e.target.value);
+  }
+  const filteredTasks = array.filter((task) => {
+    if (filterType === "active") {
+      return !task.completed;
+    } else if (filterType === "completed") {
+      return task.completed;
+    } else {
+      return true;
+    }
+  });
   return (
     <div className="form">
       <h1>ToDo Project</h1>
@@ -135,21 +157,44 @@ const Page1 = () => {
           <caption>User Data</caption>
           <thead>
             <tr>
+              <th colSpan={6}>
+                <Form.Select
+                  value={filterType}
+                  onChange={handleFilterChange}
+                  aria-label="Filter Tasks"
+                >
+                  <option value="all">All</option>
+                  <option value="active">Active</option>
+                  <option value="completed">Completed</option>
+                </Form.Select>
+              </th>
+            </tr>
+            <tr>
               <th>S No.</th>
               <th>Name</th>
               <th>Mobile No.</th>
               <th>Gender</th>
+              <th>Completed</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {array.map((a, i) => {
               return (
-                <tr key={i}>
+                <tr key={i} className={a.completed ? "strike-through" : ""}>
                   <td>{i + 1}.</td>
                   <td>{a.name}</td>
                   <td>{a.mobileNo}</td>
                   <td>{a.gender}</td>
+                  <td>
+                    <Form.Check
+                      type="checkbox"
+                      checked={a.completed || false}
+                      onChange={() => {
+                        toggleComplete(i);
+                      }}
+                    />
+                  </td>
                   <td>
                     <Button
                       variant="outline-info"
@@ -171,6 +216,34 @@ const Page1 = () => {
                       Delete
                     </Button>
                   </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
+      ) : (
+        ""
+      )}
+      {filteredTasks.length > 0 ? (
+        <Table striped>
+          <caption>Filtered Data</caption>
+          <thead>
+            <tr>
+              <th>S No.</th>
+              <th>Name</th>
+              <th>Mobile No.</th>
+              <th>Gender</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredTasks.map((a, i) => {
+              const originalIndex = array.findIndex((task) => task === a) + 1;
+              return (
+                <tr key={i}>
+                  <td>{originalIndex}.</td>
+                  <td>{a.name}</td>
+                  <td>{a.mobileNo}</td>
+                  <td>{a.gender}</td>
                 </tr>
               );
             })}
